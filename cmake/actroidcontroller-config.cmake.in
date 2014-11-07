@@ -1,0 +1,54 @@
+# ActroidController CMake config file
+#
+# This file sets the following variables:
+# ActroidController_FOUND - Always TRUE.
+# ActroidController_INCLUDE_DIRS - Directories containing the ActroidController include files.
+# ActroidController_IDL_DIRS - Directories containing the ActroidController IDL files.
+# ActroidController_LIBRARIES - Libraries needed to use ActroidController.
+# ActroidController_DEFINITIONS - Compiler flags for ActroidController.
+# ActroidController_VERSION - The version of ActroidController found.
+# ActroidController_VERSION_MAJOR - The major version of ActroidController found.
+# ActroidController_VERSION_MINOR - The minor version of ActroidController found.
+# ActroidController_VERSION_REVISION - The revision version of ActroidController found.
+# ActroidController_VERSION_CANDIDATE - The candidate version of ActroidController found.
+
+message(STATUS "Found ActroidController-@PROJECT_VERSION@")
+set(ActroidController_FOUND TRUE)
+
+find_package(<dependency> REQUIRED)
+
+#set(ActroidController_INCLUDE_DIRS
+#    "@CMAKE_INSTALL_PREFIX@/include/@PROJECT_NAME_LOWER@-@PROJECT_VERSION_MAJOR@"
+#    ${<dependency>_INCLUDE_DIRS}
+#    )
+#
+#set(ActroidController_IDL_DIRS
+#    "@CMAKE_INSTALL_PREFIX@/include/@PROJECT_NAME_LOWER@-@PROJECT_VERSION_MAJOR@/idl")
+set(ActroidController_INCLUDE_DIRS
+    "@CMAKE_INSTALL_PREFIX@/include/@CPACK_PACKAGE_FILE_NAME@"
+    ${<dependency>_INCLUDE_DIRS}
+    )
+set(ActroidController_IDL_DIRS
+    "@CMAKE_INSTALL_PREFIX@/include/@CPACK_PACKAGE_FILE_NAME@/idl")
+
+
+if(WIN32)
+    set(ActroidController_LIBRARIES
+        "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@CMAKE_SHARED_LIBRARY_PREFIX@@PROJECT_NAME_LOWER@@CMAKE_STATIC_LIBRARY_SUFFIX@"
+        ${<dependency>_LIBRARIES}
+        )
+else(WIN32)
+    set(ActroidController_LIBRARIES
+        "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@CMAKE_SHARED_LIBRARY_PREFIX@@PROJECT_NAME_LOWER@@CMAKE_SHARED_LIBRARY_SUFFIX@"
+        ${<dependency>_LIBRARIES}
+        )
+endif(WIN32)
+
+set(ActroidController_DEFINITIONS ${<dependency>_DEFINITIONS})
+
+set(ActroidController_VERSION @PROJECT_VERSION@)
+set(ActroidController_VERSION_MAJOR @PROJECT_VERSION_MAJOR@)
+set(ActroidController_VERSION_MINOR @PROJECT_VERSION_MINOR@)
+set(ActroidController_VERSION_REVISION @PROJECT_VERSION_REVISION@)
+set(ActroidController_VERSION_CANDIDATE @PROJECT_VERSION_CANDIDATE@)
+
