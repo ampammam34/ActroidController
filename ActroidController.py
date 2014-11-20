@@ -202,11 +202,12 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
 
                         # もし両方のデータが更新されていたら
                         if self._current_pose_updated == True and self._target_pose_updated == True:
-                                listData = [self._d_pose_position.data, self._d_pose_target.data]
+                                listData = [self._d_pose_position.data, self._d_pose_target.data] #[現在値データ，目標値データ]
                                 self.csvWriter.writerow(listData)
 				self._d_poseout.data = self._d_pose_target.data
 				self._d_poseout.tm   = self._d_pose_target.tm
                                 self._poseoutOut.write()
+                                print self._d_poseout.data
 
                         return RTC.RTC_OK
 
