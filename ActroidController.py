@@ -198,6 +198,7 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                                 self._current_pose_updated = True       
                         if self._pose_targetIn.isNew():      
                                 self._d_pose_target = self._pose_targetIn.read()
+                                #self._d_pose_target[15] +  0.06 = self._pose_targetIn.read()
                                 self._target_pose_updated = True
 
                         # もし両方のデータが更新されていたら
