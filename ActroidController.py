@@ -192,14 +192,14 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
 		#
 	def onExecute(self, ec_id):
                 try:
-
                         if self._pose_positionIn.isNew():
                                 self._d_pose_position = self._pose_positionIn.read()                                
                                 self._current_pose_updated = True       
-                        if self._pose_targetIn.isNew():      
-                                self._d_pose_target = self._pose_targetIn.read()
-                                #self._d_pose_target[15] +  0.06 = self._pose_targetIn.read()
-                                self._target_pose_updated = True
+                        if self._pose_targetIn.isNew():
+                                str(self._d_pose_target)
+                                print self._d_pose_target[16]
+                                #self._d_pose_target = self._pose_targetIn.read()
+                                #self._target_pose_updated = True
 
                         # もし両方のデータが更新されていたら
                         if self._current_pose_updated == True and self._target_pose_updated == True:
