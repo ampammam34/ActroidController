@@ -159,11 +159,12 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
 	#	#
 	#	#
 	def onActivated(self, ec_id):
+                self.time1 = time.time()
                 self.f = open('data.csv','ab')
                 self.csvWriter = csv.writer(self.f)
-
                 self._current_pose_updated = False
                 self._target_pose_updated = False
+                self._sum = [0]*24 #sumの初期化
 		return RTC.RTC_OK
 	
 	#	##
@@ -192,22 +193,32 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
 		#
 	def onExecute(self, ec_id):
                 try:
+                        self.time2 = time.time()
+                        delta_time = int(self.time2-self.time1)
                         if self._pose_positionIn.isNew():
-                                self._d_pose_position = self._pose_positionIn.read()                                
+                                self._d_pose_position = self._pose_positionIn.read()
+                                #self.time = self._d_pose_position.tm.sec + (self._d_pose_position.tm.nsec / 1000000000)
                                 self._current_pose_updated = True       
                         if self._pose_targetIn.isNew():
-                                str(self._d_pose_target)
-                                print self._d_pose_target[16]
-                                #self._d_pose_target = self._pose_targetIn.read()
-                                #self._target_pose_updated = True
+                                self._d_pose_target = self._pose_targetIn.read()
+                                self.time = self._d_pose_target.tm
+                                self._target_pose_updated = True
 
                         # もし両方のデータが更新されていたら
                         if self._current_pose_updated == True and self._target_pose_updated == True:
-                                listData = [self._d_pose_position.data, self._d_pose_target.data] #[現在値データ，目標値データ]
+                                listData = [delta_time, self._d_pose_position.data, self._d_pose_target.data]#[時間、現在値データ，目標値データ]
                                 self.csvWriter.writerow(listData)
-				self._d_poseout.data = self._d_pose_target.data
-				self._d_poseout.tm   = self._d_pose_target.tm
-                                self._poseoutOut.write()
+				#self._d_poseout.data = self._d_pose_target.data
+
+                                k = 1
+                                self.delta = 0
+                                for n in range(0, 24):
+                                        self.delta = self._d_pose_target.data[n] - self._d_pose_position.data[n]
+                                        sum[n] += self.delta #ここにエラーが出るが解決策がわからない
+                                        self._d_poseout.data[n] = self._d_pose_target[n] + k * sum[n]
+
+                                        self._poseoutOut.write()
+                                
                                 print self._d_poseout.data
 
                         return RTC.RTC_OK
