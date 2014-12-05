@@ -164,7 +164,35 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                 self.csvWriter = csv.writer(self.f)
                 self._current_pose_updated = False
                 self._target_pose_updated = False
-                self._sum = [0]*24 #sumの初期化
+                self._target = [0.0]*24 #targetの初期化
+                self._current = [0.0]*24 #currentの初期化
+                self._epsilon = [0.0]*24 #epsilonの初期化
+                self._sum = [0.0]*24 #sumの初期化
+                self._output = [0.0]*24 #outputの初期化
+                self._gain = [0.0,# 0:Eyebrows up&down  
+                              0.0,# 1:Eyelids open&shut 
+                              0.0,# 2:Eyes right&left 
+                              0.0,# 3:Eyes up&down 
+                              0.0,# 4:Mouth open&shut 
+                              0.0,# 5:left neck  
+                              0.0,# 6:right neck  
+                              0.0,# 7:Neck turning 
+                              0.001,# 8:left arm up       #L1
+                              0.0,# 9:left arm open     #L2 
+                              0.0,# 10:left upper arm   #L3
+                              0.0,# 11:left elbow       #L4
+                              0.0,# 12:left forearm     #L5
+                              0.0,# 13:left hand length #L6
+                              0.0,# 14:left hand side   #L7
+                              0.0,# 15:right arm up     #R1
+                              0.0,# 16:right arm open   #R2
+                              0.0,# 17:right upper arm  #R3
+                              0.0,# 18:right elbow      #R4
+                              0.0,# 19:right forearm    #R5
+                              0.0,# 20:right hand length
+                              0.0,# 21:right hand side 
+                              0.0,# 22:Body front&back
+                              0.0]# 23:Body turning #gainの初期化
 		return RTC.RTC_OK
 	
 	#	##
@@ -196,28 +224,37 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                         self.time2 = time.time()
                         delta_time = int(self.time2-self.time1)
                         if self._pose_positionIn.isNew():
-                                self._d_pose_position = self._pose_positionIn.read()
+                                data = self._pose_positionIn.read()
+                                for i in range(24):
+                                        self._current[i] = data.data[i]
                                 #self.time = self._d_pose_position.tm.sec + (self._d_pose_position.tm.nsec / 1000000000)
                                 self._current_pose_updated = True       
                         if self._pose_targetIn.isNew():
-                                self._d_pose_target = self._pose_targetIn.read()
+                                d = self._pose_targetIn.read()
+                                for i in range(24):
+                                        self._target[i] = d.data[i]
+                                        self._epsilon[i] = self._target[i] - self._current[i]
+                                        self._sum[i] = self._sum[i] + self._epsilon[i]
+                                        self._output[i] = self._target[i] + self._gain[i] * self._sum[i]
                                 self.time = self._d_pose_target.tm
                                 self._target_pose_updated = True
 
                         # もし両方のデータが更新されていたら
                         if self._current_pose_updated == True and self._target_pose_updated == True:
-                                listData = [delta_time, self._d_pose_position.data, self._d_pose_target.data]#[時間、現在値データ，目標値データ]
+                                listData = [delta_time, self._current, self._target]#[時間、現在値データ，目標値データ]
                                 self.csvWriter.writerow(listData)
 				#self._d_poseout.data = self._d_pose_target.data
 
-                                k = 1
-                                self.delta = 0
-                                for n in range(0, 24):
-                                        self.delta = self._d_pose_target.data[n] - self._d_pose_position.data[n]
-                                        sum[n] += self.delta #ここにエラーが出るが解決策がわからない
-                                        self._d_poseout.data[n] = self._d_pose_target[n] + k * sum[n]
+                                #k = 1
+                                #self._epsilon = [0]*24
+                                #for n in range(24):
+                                #        self._epsilon[n] = self._pose_target[n] - self._pose_position[n] #ここにエラーが出るが解決策がわからない
+                                #        self._sum[n] += self.epsilon[n]
+                                #        self._d_poseout.data[n] = self._d_pose_target[n] + k * self._sum[n]
 
-                                        self._poseoutOut.write()
+                                self._d_poseout.data = self._output
+
+                                self._poseoutOut.write()
                                 
                                 print self._d_poseout.data
 
