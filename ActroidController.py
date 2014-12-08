@@ -48,7 +48,33 @@ actroidcontroller_spec = ["implementation_id", "ActroidController",
 # @class ActroidController
 # @brief ModuleDescription
 # 
-# 
+#
+
+class RingBuffer :
+
+        def __init__(self, num):
+                self._buffer = [0.0] * num
+                self._len = num
+                self._counter = 0
+
+        def length(self):
+                return self._len
+                
+        def push(self, data):
+                self._buffer[self._counter] = data
+                self._counter = self._counter + 1
+                if self._counter == self._len:
+                        self._counter  = 0
+
+        def pop(self):
+                return self._buffer[self._counter]
+
+        def getSum(self):
+                sum = 0.0
+                for data in self._buffer:
+                        sum = sum + data
+                return sum
+
 class ActroidController(OpenRTM_aist.DataFlowComponentBase):
 	
 	##
@@ -158,6 +184,9 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
 	#	# @return RTC::ReturnCode_t
 	#	#
 	#	#
+
+
+                
 	def onActivated(self, ec_id):
                 self.time1 = time.time()
                 self.f = open('data.csv','ab')
@@ -177,9 +206,9 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                               0.0,# 5:left neck  
                               0.0,# 6:right neck  
                               0.0,# 7:Neck turning 
-                              0.001,# 8:left arm up       #L1
-                              0.0,# 9:left arm open     #L2 
-                              0.0,# 10:left upper arm   #L3
+                              0.0001,# 8:left arm up       #L1 決定
+                              0.0,# 9:left arm open     #L2  決定
+                              0.0,# 10:left upper arm   #L3　
                               0.0,# 11:left elbow       #L4
                               0.0,# 12:left forearm     #L5
                               0.0,# 13:left hand length #L6
@@ -193,6 +222,10 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                               0.0,# 21:right hand side 
                               0.0,# 22:Body front&back
                               0.0]# 23:Body turning #gainの初期化
+                self._ringBuffer = []
+                for i in range(24):
+                        self._ringBuffer.append(RingBuffer(100))
+                        
 		return RTC.RTC_OK
 	
 	#	##
@@ -222,6 +255,8 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
 	def onExecute(self, ec_id):
                 try:
                         self.time2 = time.time()
+
+                        
                         delta_time = int(self.time2-self.time1)
                         if self._pose_positionIn.isNew():
                                 data = self._pose_positionIn.read()
@@ -233,15 +268,23 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                                 d = self._pose_targetIn.read()
                                 for i in range(24):
                                         self._target[i] = d.data[i]
-                                        self._epsilon[i] = self._target[i] - self._current[i]
-                                        self._sum[i] = self._sum[i] + self._epsilon[i]
-                                        self._output[i] = self._target[i] + self._gain[i] * self._sum[i]
                                 self.time = self._d_pose_target.tm
                                 self._target_pose_updated = True
+                        """                                
+                        self._ringstart = 0
+                        self._ringbuf[self._ringstart] = data
+                        self._ringstart == self._ringstart + 1
+                        if self._ringstart == 100:
+                                self._ringstart = 0
+                        for i in range(100):
+                                self._sum[i] += self._epsilon[i]
+                        """
+
+                        
 
                         # もし両方のデータが更新されていたら
                         if self._current_pose_updated == True and self._target_pose_updated == True:
-                                listData = [delta_time, self._current, self._target]#[時間、現在値データ，目標値データ]
+                                listData = [delta_time, self._current, self._target, self._output]#[時間、現在値データ，目標値データ]
                                 self.csvWriter.writerow(listData)
 				#self._d_poseout.data = self._d_pose_target.data
 
@@ -252,12 +295,19 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                                 #        self._sum[n] += self.epsilon[n]
                                 #        self._d_poseout.data[n] = self._d_pose_target[n] + k * self._sum[n]
 
-                                self._d_poseout.data = self._output
-
-                                self._poseoutOut.write()
                                 
-                                print self._d_poseout.data
 
+                        # Calculate Output Value
+                        for i in range(24):
+                                self._epsilon[i] = self._target[i] - self._current[i]
+                                self._ringBuffer[i].push(self._epsilon[i])
+                                self._sum[i] = self._ringBuffer[i].getSum()
+                                self._output[i] = self._target[i] + self._gain[i]*self._sum[i]
+
+                        self._d_poseout.data = self._output
+                        self._poseoutOut.write()
+                        print self._d_poseout.data
+                        
                         return RTC.RTC_OK
 
                 except Exception, e:
