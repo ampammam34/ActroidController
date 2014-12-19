@@ -270,15 +270,6 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                                         self._target[i] = d.data[i]
                                 self.time = self._d_pose_target.tm
                                 self._target_pose_updated = True
-                        """                                
-                        self._ringstart = 0
-                        self._ringbuf[self._ringstart] = data
-                        self._ringstart == self._ringstart + 1
-                        if self._ringstart == 100:
-                                self._ringstart = 0
-                        for i in range(100):
-                                self._sum[i] += self._epsilon[i]
-                        """
 
                         
 
