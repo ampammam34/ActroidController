@@ -198,30 +198,31 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                 self._epsilon = [0.0]*24 #epsilonの初期化
                 self._sum = [0.0]*24 #sumの初期化
                 self._output = [0.0]*24 #outputの初期化
-                self._gain = [0.0,# 0:Eyebrows up&down  
-                              0.0,# 1:Eyelids open&shut 
-                              0.0,# 2:Eyes right&left 
-                              0.0,# 3:Eyes up&down 
-                              0.0,# 4:Mouth open&shut 
-                              0.0,# 5:left neck  
-                              0.0,# 6:right neck  
-                              0.0,# 7:Neck turning 
-                              0.0001,# 8:left arm up       #L1 決定
-                              0.0,# 9:left arm open     #L2  決定
-                              0.0,# 10:left upper arm   #L3　
-                              0.0,# 11:left elbow       #L4
-                              0.0,# 12:left forearm     #L5
-                              0.0,# 13:left hand length #L6
-                              0.0,# 14:left hand side   #L7
-                              0.0,# 15:right arm up     #R1
-                              0.0,# 16:right arm open   #R2
-                              0.0,# 17:right upper arm  #R3
-                              0.0,# 18:right elbow      #R4
-                              0.0,# 19:right forearm    #R5
-                              0.0,# 20:right hand length
-                              0.0,# 21:right hand side 
-                              0.0,# 22:Body front&back
-                              0.0]# 23:Body turning #gainの初期化
+                self._gain = [0.0,# 1:Eyebrows up&down  
+                              0.0,# 2:Eyelids open&shut 
+                              0.0,# 3:Eyes right&left 
+                              0.0,# 4:Eyes up&down 
+                              0.0,# 5:Mouth open&shut 
+                              0.0,# 6:left neck  
+                              0.0,# 7:right neck  
+                              0.0,# 8:Neck turning
+                              #0.0,# 9:left arm up 
+                              0.0001,# 9:left arm up       #L1 決定
+                              0,# 10:left arm open     #L2
+                              0.0001,# 11:left upper arm   #L3  決定
+                              0.0001,# 12:left elbow       #L4
+                              0.0001,# 13:left forearm     #L5
+                              0.0,# 14:left hand length #L6  決定
+                              0.001,# 15:left hand side   #L7
+                              0.0,# 16:right arm up     #R1
+                              0.0,# 17:right arm open   #R2
+                              0.0,# 18:right upper arm  #R3
+                              0.0,# 19:right elbow      #R4
+                              0.0,# 20:right forearm    #R5
+                              0.0,# 21:right hand length
+                              0.0,# 22:right hand side 
+                              0.0,# 23:Body front&back
+                              0.0]# 24:Body turning #gainの初期化
                 self._ringBuffer = []
                 for i in range(24):
                         self._ringBuffer.append(RingBuffer(100))
