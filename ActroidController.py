@@ -206,12 +206,14 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                               0.0,# 6:left neck  
                               0.0,# 7:right neck  
                               0.0,# 8:Neck turning
-                              #0.0,# 9:left arm up 
-                              0.0001,# 9:left arm up       #L1 決定
-                              0,# 10:left arm open     #L2
+                              0.001,# 9:left arm up       #L1 実験
+                              #0.001,# 9:left arm up       #L1 決定
+                              0.005,# 10:left arm open     #L2
                               0.0001,# 11:left upper arm   #L3  決定
+                              #0.0,# 12:left elbow       #L4仮
                               0.0001,# 12:left elbow       #L4
-                              0.0001,# 13:left forearm     #L5
+                              #0.0,# 13:left forearm     #L5 実験用
+                              0.001,# 13:left forearm     #L5
                               0.0,# 14:left hand length #L6  決定
                               0.001,# 15:left hand side   #L7
                               0.0,# 16:right arm up     #R1
@@ -257,8 +259,7 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                 try:
                         self.time2 = time.time()
 
-                        
-                        delta_time = int(self.time2-self.time1)
+                        delta_time = float(self.time2-self.time1)
                         if self._pose_positionIn.isNew():
                                 data = self._pose_positionIn.read()
                                 for i in range(24):
@@ -276,7 +277,7 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
 
                         # もし両方のデータが更新されていたら
                         if self._current_pose_updated == True and self._target_pose_updated == True:
-                                listData = [delta_time, self._current, self._target, self._output]#[時間、現在値データ，目標値データ]
+                                listData = [delta_time, self._gain[9], self._epsilon[9], self._current[9], self._target[9], self._output[9]]#[時間、現在値データ，目標値データ]
                                 self.csvWriter.writerow(listData)
 				#self._d_poseout.data = self._d_pose_target.data
 
