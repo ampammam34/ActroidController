@@ -206,13 +206,13 @@ class ActroidController(OpenRTM_aist.DataFlowComponentBase):
                               0.0,# 6:left neck  
                               0.0,# 7:right neck  
                               0.0,# 8:Neck turning
-                              0.001,# 9:left arm up       #L1 決定
-                              0.005,# 10:left arm open     #L2 決定
-                              0.0001,# 11:left upper arm   #L3  決定(0でも変わらん) 
-                              0.00005,# 12:left elbow       #L4  決定(0でも変わらん) 
-                              0.005,# 13:left forearm     #L5 超結果良い
-                              0.003,# 14:left hand length #L6  決定
-                              0.002,# 15:left hand side   #L7  決定
+                              0.0010,# 9:left arm up       #L1 決定
+                              0.0050,# 10:left arm open     #L2 決定
+                              0.00010,# 11:left upper arm   #L3  決定(0でも変わらん) 
+                              0.000050,# 12:left elbow       #L4  決定(0でも変わらん) 
+                              0.0050,# 13:left forearm     #L5 超結果良い
+                              0.0030,# 14:left hand length #L6  決定
+                              0.0020,# 15:left hand side   #L7  決定
                               0.0,# 16:right arm up     #R1
                               0.0,# 17:right arm open   #R2
                               0.0,# 18:right upper arm  #R3
